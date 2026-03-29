@@ -1,99 +1,99 @@
 # RepoPulse
 
-RepoPulse es una aplicación desktop en Python + Flet para inspeccionar de forma visual la salud de un repositorio local. Está pensada como una companion app flotante para macOS y Linux: abre un repo, lo escanea y te enseña primero dónde mirar.
+RepoPulse is a desktop application built with Python + Flet to visually inspect the health of a local repository. It is designed as a floating companion app for macOS and Linux: open a repo, scan it, and see where to look first.
 
-## Qué hace
+## What It Does
 
-- Abre una carpeta con selector nativo usando `FilePicker.get_directory_path()`
-- Detecta si parece un repositorio Git y permite escanear una carpeta normal igualmente
-- Calcula hotspots de archivos con heurísticas sin IA
-- Resume el estado actual de Git
-- Detecta heavy deletion desde `HEAD`
-- Sugiere entradas potencialmente ausentes en `.gitignore`
-- Permite refrescar el análisis con `Refresh Scan`
-- Guarda settings, geometría de ventana y último repo abierto
+- Opens a folder with the native picker using `FilePicker.get_directory_path()`
+- Detects whether it looks like a Git repository and still allows scanning a regular folder
+- Calculates file hotspots with non-AI heuristics
+- Summarizes the current Git state
+- Detects heavy deletion since `HEAD`
+- Suggests potentially missing entries in `.gitignore`
+- Lets you refresh the analysis with `Refresh Scan`
+- Saves settings, window geometry, and the last opened repo
 
 ## Stack
 
 - Python 3.11+
 - Flet
 - `pathlib`
-- `subprocess` para Git CLI
-- JSON para settings y caché ligera
+- `subprocess` for Git CLI
+- JSON for settings and lightweight cache
 
-## Requisitos
+## Requirements
 
-- Python 3.11 o superior
-- Git disponible en terminal
-- macOS o Linux
-- En Linux desktop, Flet necesita `zenity` para que el selector nativo de carpeta funcione
+- Python 3.11 or higher
+- Git available in the terminal
+- macOS or Linux
+- On Linux desktop, Flet needs `zenity` for the native folder picker to work
 
-## Instalación
+## Installation
 
-Desde la raíz del proyecto:
+From the project root:
 
 ```bash
 ./init.sh
 ```
 
-`init.sh` hace esto:
+`init.sh` does the following:
 
-1. Detecta macOS o Linux
-2. Comprueba Python 3.11+
-3. Crea `.venv` si no existe
-4. Instala dependencias desde `requirements.txt`
-5. Crea un launcher ejecutable `repopulse`
-6. Intenta instalarlo en `~/.local/bin/repopulse` y usa `~/bin/repopulse` si hace falta
-7. Avisa si esa ruta no está en tu `PATH`
+1. Detects macOS or Linux
+2. Checks for Python 3.11+
+3. Creates `.venv` if it does not exist
+4. Installs dependencies from `requirements.txt`
+5. Creates an executable `repopulse` launcher
+6. Tries to install it to `~/.local/bin/repopulse` and falls back to `~/bin/repopulse` if needed
+7. Warns you if that path is not in your `PATH`
 
-El script es idempotente. Puedes lanzarlo varias veces sin romper el entorno.
+The script is idempotent. You can run it multiple times without breaking the environment.
 
-## Uso
+## Usage
 
-Ejecución rápida local:
+Quick local run:
 
 ```bash
 ./run.sh
 ```
 
-Si el launcher quedó en tu `PATH`:
+If the launcher was added to your `PATH`:
 
 ```bash
 repopulse
 ```
 
-## Flujo principal
+## Main Flow
 
-1. Abre RepoPulse
-2. Pulsa `Open Repository`
-3. Selecciona una carpeta con el explorador nativo
-4. Si la carpeta contiene `.git`, se analiza como repositorio Git
-5. Si no contiene `.git`, la app muestra:
+1. Open RepoPulse
+2. Click `Open Repository`
+3. Select a folder with the native file explorer
+4. If the folder contains `.git`, it is analyzed as a Git repository
+5. If it does not contain `.git`, the app shows:
    - `This folder does not look like a Git repository.`
-   - opciones `Cancel` y `Scan folder anyway`
-6. Navega por:
+   - options `Cancel` and `Scan folder anyway`
+6. Navigate through:
    - `Overview`
    - `Hotspots`
    - `Git`
    - `Ignore`
    - `Files`
-7. Pulsa `Refresh Scan` para recalcular el estado
+7. Click `Refresh Scan` to recalculate the current state
 
-## Qué detecta
+## What It Detects
 
-### Métricas por archivo
+### Per-File Metrics
 
 - line count
 - size in bytes
-- complejidad aproximada por tokens de control de flujo
-- nesting máximo aproximado
-- número aproximado de imports
-- churn Git
-- estado Git actual
-- líneas añadidas y eliminadas
-- preview corto del contenido
+- approximate complexity from control-flow tokens
+- approximate maximum nesting
+- approximate number of imports
+- Git churn
+- current Git status
+- lines added and removed
+- short content preview
 
-### Heurísticas estructurales
+### Structural Heuristics
 
 - Large file
 - Huge function estimate
@@ -101,12 +101,12 @@ repopulse
 - Too many conditionals
 - Too many imports
 
-### Heurísticas de duplicación
+### Duplication Heuristics
 
 - Possible duplication block
-- Similar repeated fragments entre archivos
+- Similar repeated fragments across files
 
-### Heurísticas Git
+### Git Heuristics
 
 - High churn hotspot
 - Many uncommitted changes
@@ -114,34 +114,34 @@ repopulse
 - Many untracked files
 - Generated files tracked
 
-### Higiene de repositorio
+### Repository Hygiene
 
 - Suggested `.gitignore` entries
 - Temporary/local file present
 - Build/cache artifact detected
 
-## Interfaz
+## Interface
 
-La UI sigue una línea visual compacta y técnica:
+The UI follows a compact, technical visual style:
 
-- dark theme profundo
-- cards densas y legibles
-- colores de severidad claros
-- listas rápidas de escanear
-- panel lateral en modo ancho
-- modal de detalle en modo estrecho
+- deep dark theme
+- dense, readable cards
+- clear severity colors
+- lists that are quick to scan
+- side panel in wide mode
+- modal detail view in narrow mode
 
 ### Tabs
 
-- `Overview`: score global, resumen, top hotspots y warnings recientes
-- `Hotspots`: archivos prioritarios y detalle de cada archivo
-- `Git`: cambios actuales, heavy deletion y commits recientes
-- `Ignore`: sugerencias de `.gitignore`
-- `Files`: inventario filtrable y ordenable de archivos
+- `Overview`: overall score, summary, top hotspots, and recent warnings
+- `Hotspots`: priority files and details for each file
+- `Git`: current changes, heavy deletion, and recent commits
+- `Ignore`: `.gitignore` suggestions
+- `Files`: filterable and sortable file inventory
 
-## Ventana desktop
+## Desktop Window
 
-RepoPulse usa la API desktop de Flet para:
+RepoPulse uses the Flet desktop API for:
 
 - `page.window.width`
 - `page.window.height`
@@ -153,19 +153,19 @@ RepoPulse usa la API desktop de Flet para:
 - `page.window.resizable`
 - `page.window.on_event`
 
-Comportamiento:
+Behavior:
 
-- ventana redimensionable y minimizable
-- pin de always-on-top
-- restauración opcional de geometría
-- usable en vertical estrecho y ancho
-- anclaje inicial:
-  - Linux: lado izquierdo
-  - macOS: lado derecho
+- resizable and minimizable window
+- always-on-top pin
+- optional geometry restore
+- usable in both narrow vertical and wide layouts
+- initial anchoring:
+  - Linux: left side
+  - macOS: right side
 
 ## Settings
 
-Se guardan en JSON en el directorio de configuración del usuario:
+They are stored as JSON in the user configuration directory:
 
 - `remember window geometry`
 - `restore last repo`
@@ -175,23 +175,23 @@ Se guardan en JSON en el directorio de configuración del usuario:
 - `ignore binary files`
 - `file size cap for preview`
 - `scan ignored directories`
-- thresholds de análisis
+- analysis thresholds
 
 ## Logging
 
-Se registra actividad básica en:
+Basic activity is logged in:
 
 - scans
-- llamadas Git
-- errores de lectura/ejecución
+- Git calls
+- read/execution errors
 
-La ruta de configuración por defecto es:
+The default configuration path is:
 
 ```text
 ~/.config/repopulse/
 ```
 
-## Estructura del proyecto
+## Project Structure
 
 ```text
 repopulse/
@@ -241,15 +241,15 @@ repopulse/
     icon.png
 ```
 
-## Limitaciones de esta V1
+## Limitations of This V1
 
-- No usa AST complejo ni análisis semántico profundo
-- No interpreta arquitectura completa del proyecto
-- La detección de duplicación es conservadora y aproximada
-- El score de salud es heurístico, no “científico”
-- No realiza acciones destructivas sobre Git
-- No usa backend ni IA
+- It does not use a complex AST or deep semantic analysis
+- It does not interpret the full project architecture
+- Duplication detection is conservative and approximate
+- The health score is heuristic, not "scientific"
+- It does not perform destructive Git actions
+- It does not use a backend or AI
 
-## Nota para Linux
+## Linux Note
 
-Para que el selector nativo de carpetas funcione correctamente en desktop con Flet, debes tener `zenity` disponible en el sistema.
+For the native folder picker to work correctly on desktop with Flet, `zenity` must be available on the system.
